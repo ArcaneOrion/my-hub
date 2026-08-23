@@ -47,14 +47,6 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
       </section>
     )}
 
-    <!-- 精选文章 -->
-    <section class="mt-12">
-      <SectionHeader title="精选文章" href="/posts" />
-      <div class="grid gap-4 sm:grid-cols-2">
-        {featured.map((post, i) => <PostCard post={post} index={i + 2} />)}
-      </div>
-    </section>
-
     <!-- 作品 -->
     <section class="mt-14">
       <SectionHeader title="作品" />
@@ -84,5 +76,13 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
         </div>
       </section>
     )}
+
+    <!-- 精选文章 -->
+    <section class="mt-14">
+      <SectionHeader title="精选文章" href="/posts" />
+      <div class="grid gap-4 sm:grid-cols-2">
+        {featured.map((post, i) => <PostCard post={post} index={i + 2} />)}
+      </div>
+    </section>
   </div>
 </Base>
