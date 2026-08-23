@@ -4,7 +4,7 @@
 
 ## 项目一句话
 
-arcane orion 的个人主站（hub + 房间两层结构），Astro + Supabase + CF Pages，部署于 `blog.alice001.top`。
+arcane orion 的个人主站（hub + 房间两层结构），Astro + Supabase + CF Pages，部署于 `hub.alice001.top`。
 
 ## 文档地图
 

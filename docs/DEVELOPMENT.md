@@ -54,14 +54,14 @@
 | 数据后端 | Supabase（托管云） | PostgREST 自动生成带 OpenAPI 文档的 REST API；Auth/Storage 现成，为未来私域预留；v1 零后端代码 |
 | 契约 | contract-first：`specs/openapi.yaml` 为接口唯一事实源 | 前端只依赖生成的类型，不依赖后端实现细节；后端可整体更换而不伤前端 |
 | 渲染策略 | SSG（构建时从 Supabase 拉数据）+ CF Pages 部署钩子 | SEO 与性能最优；内容变更后触发重新部署即可（v1 手动触发可接受） |
-| 部署 | Cloudflare Pages，域名 `blog.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动部署 |
+| 部署 | Cloudflare Pages，域名 `hub.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动部署 |
 
 **渲染策略备注**：若未来出现「发布后必须秒级可见」的需求，再评估 SSR adapter 或增量渲染。当前不做。
 
 **前后端关系图**：
 
 ```
-浏览器 ──> blog.alice001.top (CF Pages: Astro 静态产物)
+浏览器 ──> hub.alice001.top (CF Pages: Astro 静态产物)
                 │ 构建时 & 客户端按需
                 ▼
         xxxx.supabase.co (PostgREST REST API, 自带 OpenAPI 文档)
@@ -227,7 +227,7 @@ my-hub/
 1. CF Dashboard → Workers & Pages → 连接 git 仓库
 2. 构建命令 `npm run build`，输出目录 `dist`
 3. 环境变量配置 `SUPABASE_URL` / `SUPABASE_ANON_KEY`
-4. Custom domain 绑 `blog.alice001.top`（DNS 已在同账号 CF，自动加 CNAME）
+4. Custom domain 绑 `hub.alice001.top`（DNS 已在同账号 CF，自动加 CNAME）
 5. 创建 Deploy Hook，供内容更新后触发重建
 
 ## 9. 里程碑与验收
