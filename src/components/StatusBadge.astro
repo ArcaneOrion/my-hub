@@ -1,0 +1,8 @@
+---
+import type { EntryStatus } from '../lib/types';
+const { status } = Astro.props as { status: EntryStatus };
+const label = { running: '运行中', building: '构建中', archived: '已归档' }[status];
+---
+<span class="inline-flex items-center gap-1.5 text-[11.5px]" style="color: var(--ink-muted);">
+  <span class={`dot ${status}`}></span>{label}
+</span>

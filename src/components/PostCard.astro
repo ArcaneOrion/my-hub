@@ -1,0 +1,15 @@
+---
+import type { PostMeta } from '../lib/types';
+interface Props { post: PostMeta; index?: number }
+const { post, index = 0 } = Astro.props;
+const date = new Date(post.published_at).toLocaleDateString('zh-CN');
+---
+<a href={`/posts/${post.slug}`} class="card rise block p-6" style={`--i:${index}`}>
+  <div class="flex items-center gap-2 text-xs" style="color: var(--ink-muted);">
+    <time datetime={post.published_at}>{date}</time>
+    <span>·</span>
+    <span class="font-mono uppercase tracking-widest">{post.tags.join(' / ')}</span>
+  </div>
+  <h2 class="mt-2.5 text-[17px] font-bold tracking-tight">{post.title}</h2>
+  <p class="mt-2 line-clamp-2 text-[13.5px] leading-relaxed" style="color: var(--ink-muted);">{post.summary}</p>
+</a>

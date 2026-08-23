@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import ProfileBlock from '../components/ProfileBlock.astro';
+import EntryCard from '../components/EntryCard.astro';
+import PostCard from '../components/PostCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { getEntries } from '../lib/api/entries';
+import { getFeaturedPosts } from '../lib/api/posts';
+import { getProfile } from '../lib/api/profile';
+
+const [entries, featured, profile] = await Promise.all([getEntries(), getFeaturedPosts(4), getProfile()]);
+---
+
+<Base>
+  <div class="pt-10 md:pt-14">
+    <ProfileBlock profile={profile} />
+
+    <!-- 入口卡片区：Bento 不等宽网格 -->
+    <section class="mt-12">
+      <SectionHeader title="入口" />
+      <div class="grid auto-rows-[minmax(150px,auto)] grid-cols-2 gap-4 md:grid-cols-4">
+        {entries.map((entry, i) => (
+          <div
+            class:list={[
+              entry.size_hint === 'lg' && 'col-span-2 row-span-2',
+              entry.size_hint === 'sm' && 'md:col-span-1',
+              entry.size_hint === 'md' && 'col-span-1',
+            ]}
+          >
+            <EntryCard entry={entry} index={i + 1} />
+          </div>
+        ))}
+      </div>
+      <p class="metalabel mt-3">入口由数据驱动 · 未来会更多</p>
+    </section>
+
+    <!-- 精选文章 -->
+    <section class="mt-14">
+      <SectionHeader title="精选文章" href="/posts" />
+      <div class="grid gap-4 sm:grid-cols-2">
+        {featured.map((post, i) => <PostCard post={post} index={i} />)}
+      </div>
+    </section>
+  </div>
+</Base>

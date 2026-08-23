@@ -1,0 +1,8 @@
+---
+interface Props { title: string; href?: string; linkText?: string }
+const { title, href, linkText = '全部 →' } = Astro.props;
+---
+<div class="mb-5 flex items-baseline justify-between">
+  <h2 class="text-base font-bold tracking-tight">{title}</h2>
+  {href && <a href={href} class="text-[13px] transition-colors hover:text-[var(--accent)]" style="color: var(--ink-muted);">{linkText}</a>}
+</div>

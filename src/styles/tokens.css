@@ -1,0 +1,18 @@
+:root {
+  /* 暖白色调 */
+  --bg: #FAF7F2;
+  --surface: #FFFFFF;
+  --ink: #1C1917;
+  --ink-muted: #78716C;
+  --line: #E7E0D8;
+  --accent: #B45309;          /* 占位强调色，待站主定 */
+
+  --radius-card: 16px;
+  --radius-sm: 10px;
+  --shadow-rest: 0 1px 2px rgb(28 25 23 / 0.05), 0 4px 12px rgb(28 25 23 / 0.06);
+  --shadow-hover: 0 2px 4px rgb(28 25 23 / 0.06), 0 12px 28px rgb(28 25 23 / 0.10);
+
+  --dur-fast: 150ms;
+  --dur-move: 240ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+}

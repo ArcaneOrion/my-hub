@@ -1,0 +1,138 @@
+# my-hub API 契约（contract-first 事实源）
+#
+# 本文件描述前端实际依赖并「承诺稳定」的接口形状。
+# 后端为 Supabase PostgREST（自动生成，文档超集见 {SUPABASE_URL}/rest/v1）。
+# 变更纪律：先改本文件 → npx openapi-typescript 重新生成类型 → 再改代码。
+
+openapi: 3.1.0
+info:
+  title: my-hub content API
+  version: 0.1.0
+  description: >
+    内容查询接口。所有列表读取必须由调用方过滤可见性：
+    entries.visible = true；posts.visibility = 'public'。
+servers:
+  - url: https://uqifhbtlmoieducjzfow.supabase.co/rest/v1
+    description: Supabase PostgREST
+
+paths:
+  /entries:
+    get:
+      summary: 主站入口卡列表
+      description: |
+        GET /entries?visible=true&order=sort.asc
+        返回按 sort 升序的全部可见入口。
+      parameters:
+        - name: visible
+          in: query
+          schema: { type: boolean }
+        - name: order
+          in: query
+          schema: { type: string, example: "sort.asc" }
+      responses:
+        "200":
+          description: Entry 数组
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Entry" }
+
+  /posts:
+    get:
+      summary: 文章列表
+      description: |
+        GET /posts?visibility=eq.public&order=published_at.desc&select=slug,title,summary,tags,featured,published_at
+        列表场景不取 content_md 大字段。
+      parameters:
+        - name: visibility
+          in: query
+          schema: { type: string, enum: [public] }
+        - name: order
+          in: query
+          schema: { type: string, example: "published_at.desc" }
+        - name: featured
+          in: query
+          description: 精选过滤，eq.true 时只返回精选
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: PostMeta 数组
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/PostMeta" }
+
+  /posts/{slug}:
+    get:
+      summary: 单篇文章全文
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Post 全文（仅 visibility=public 可被匿名读取）
+          content:
+            application/json:
+              schema:
+                type: object
+                items: { $ref: "#/components/schemas/Post" }
+
+  /profile:
+    get:
+      summary: 身份块（单行）
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Profile" }
+
+components:
+  schemas:
+    Entry:
+      type: object
+      required: [id, kind, title]
+      properties:
+        id:       { type: string, description: "slug，如 posts / fit-log" }
+        kind:     { type: string, enum: [internal, service, external] }
+        title:    { type: string }
+        tagline:  { type: string, nullable: true }
+        icon:     { type: string, nullable: true, description: "图标标识符，v1 用 emoji 占位" }
+        accent:   { type: string, nullable: true }
+        size_hint:{ type: string, enum: [sm, md, lg], default: md }
+        sort:     { type: integer }
+        visible:  { type: boolean }
+        landing_description_md: { type: string, nullable: true, description: "service 类型详情页正文" }
+        status:   { type: string, enum: [running, building, archived], nullable: true }
+        external_url: { type: string, nullable: true }
+
+    PostMeta:
+      type: object
+      properties:
+        slug:         { type: string }
+        title:        { type: string }
+        summary:      { type: string }
+        tags:         { type: array, items: { type: string } }
+        featured:     { type: boolean }
+        published_at: { type: string, format: date-time }
+
+    Post:
+      allOf:
+        - $ref: "#/components/schemas/PostMeta"
+        - type: object
+          properties:
+            content_md: { type: string, description: "Markdown 全文" }
+            updated_at: { type: string, format: date-time }
+
+    Profile:
+      type: object
+      properties:
+        name:  { type: string }
+        intro: { type: string }
+        motto: { type: string }

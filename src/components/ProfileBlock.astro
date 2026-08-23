@@ -1,0 +1,33 @@
+---
+import type { Profile } from '../lib/types';
+interface Props { profile: Profile }
+const { profile } = Astro.props;
+---
+<section class="rise grid gap-4 md:grid-cols-[1fr_320px]" style="--i:0">
+  <div class="card p-7">
+    <p class="metalabel mb-3">你好</p>
+    <h1 class="text-[22px] font-bold leading-relaxed tracking-tight md:text-2xl">
+      我是 {profile.name}。<br/>
+      <span style="color: var(--ink-muted);">{profile.intro}</span>
+    </h1>
+  </div>
+  <!-- 座右铭卡：暖色轻光斑 -->
+  <div class="card relative overflow-hidden p-7">
+    <div aria-hidden="true" class="glow pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full"></div>
+    <p class="metalabel mb-3">座右铭</p>
+    <p class="relative text-lg font-semibold leading-loose">{profile.motto}</p>
+  </div>
+</section>
+
+<style>
+  .glow {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 26%, transparent), transparent);
+    filter: blur(6px);
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0); opacity: 0.55; }
+    to   { transform: translate(-18px, 12px); opacity: 0.85; }
+  }
+  @media (prefers-reduced-motion: reduce) { .glow { animation: none; } }
+</style>

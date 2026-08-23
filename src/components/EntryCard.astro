@@ -1,0 +1,34 @@
+---
+import type { Entry } from '../lib/types';
+import StatusBadge from './StatusBadge.astro';
+
+interface Props { entry: Entry; index?: number }
+const { entry, index = 0 } = Astro.props;
+
+const href =
+  entry.kind === 'external'
+    ? entry.external_url ?? '#'
+    : entry.kind === 'service'
+      ? `/s/${entry.id}`
+      : `/${entry.id}`;
+
+const pad = entry.size_hint === 'lg' ? 'md:p-8 p-5' : entry.size_hint === 'sm' ? 'p-5' : 'p-6';
+---
+<a
+  href={href}
+  class={`card rise group flex flex-col justify-between gap-6 ${pad} ${entry.size_hint === 'lg' ? 'md:row-span-2' : ''}`}
+  style={`--i:${index}`}
+  {...(entry.kind === 'external' ? { target: '_blank', rel: 'noopener' } : {})}
+>
+  <div class="flex items-start justify-between">
+    <span class="text-[26px] leading-none" aria-hidden="true">{entry.icon}</span>
+    {entry.status && <StatusBadge status={entry.status} />}
+  </div>
+  <div>
+    <h2 class={`font-bold tracking-tight ${entry.size_hint === 'lg' ? 'text-xl md:text-2xl' : 'text-[17px]'}`}>
+      {entry.title}
+      <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)]">→</span>
+    </h2>
+    {entry.tagline && <p class="mt-1.5 text-[13.5px] leading-relaxed" style="color: var(--ink-muted);">{entry.tagline}</p>}
+  </div>
+</a>
