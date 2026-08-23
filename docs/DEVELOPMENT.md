@@ -1,7 +1,7 @@
 # my-hub 开发文档
 
 > 面向未来的开发会话（含无记忆系统的 AI）：本文档自足，读完即可接手开发。
-> 最后更新：M0 阶段。
+> 最后更新：M3 收口（2026-08-23）。
 
 ---
 
@@ -52,6 +52,7 @@
 | 前端框架 | Astro 5 + TypeScript strict | 内容站 SEO 好、静态优先性能佳；岛屿架构按需水合 |
 | 样式 | Tailwind CSS v4 + CSS 设计令牌（`styles/tokens.css`） | 工具类快速迭代；令牌保证主题一致性 |
 | 数据后端 | Supabase（托管云） | PostgREST 自动生成带 OpenAPI 文档的 REST API；Auth/Storage 现成，为未来私域预留；v1 零后端代码 |
+| 分发 | @astrojs/rss + @astrojs/sitemap + og-image | RSS 订阅、搜索引擎收录、社交分享卡片，见 §6.5 |
 | 契约 | contract-first：`specs/openapi.yaml` 为接口唯一事实源 | 前端只依赖生成的类型，不依赖后端实现细节；后端可整体更换而不伤前端 |
 | 渲染策略 | SSG（构建时从 Supabase 拉数据）+ CF Pages 部署钩子 | SEO 与性能最优；内容变更后触发重新部署即可（v1 手动触发可接受） |
 | 部署 | Cloudflare Pages，域名 `hub.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动部署 |
@@ -216,6 +217,14 @@ my-hub/
 
 ---
 
+### 6.5 分发三件套
+
+| 文件 | 作用 | 维护方式 |
+|---|---|---|
+| `src/pages/rss.xml.ts` | RSS 订阅源 `/rss.xml`，数据来自 lib/api/posts | 自动，无需维护 |
+| astro.config 的 `sitemap()` 集成 | 生成 `/sitemap-index.xml` 供搜索引擎收录；`public/robots.txt` 已指向它 | 自动 |
+| `public/og-image.png` (1200×630) | 社交分享卡片大图；meta 标签在 Base.astro | 改 `public/og.svg` 后执行 `node scripts/og.mjs` 重新生成 PNG 并提交 |
+
 ## 7. 内容管理（后台）
 
 - **v1 后台 = Supabase Studio**（supabase.com 登录后的表格编辑器）：写文章、标 featured、调入口排序都在这里，零开发
@@ -230,6 +239,8 @@ my-hub/
 4. Custom domain 绑 `hub.alice001.top`（DNS 已在同账号 CF，自动加 CNAME）
 5. 创建 Deploy Hook，供内容更新后触发重建
 
+**内容变更后的上线流程**：Studio 改数据 → 触发 Deploy Hook（或任意 git push）→ 构建时重新拉取 Supabase 数据 → 约 1 分钟生效。
+
 ## 9. 里程碑与验收
 
 见 README.md 路线图表。每个里程碑完成时**必须同步更新本文档与 README**（见 AGENTS.md 硬规则）。
@@ -237,6 +248,5 @@ my-hub/
 ## 10. 已知未决项
 
 - [ ] 强调色（accent）：站主未定，当前占位 `#B45309`
-- [ ] favicon / og-image 设计
 - [ ] 旧博客 5 篇文章迁移（scripts/seed.ts，M2 执行）
 - [ ] 是否未来把主站升级到 apex 域名 alice001.top（当前按 blog 子域建设，不影响架构）

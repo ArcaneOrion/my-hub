@@ -48,7 +48,7 @@ SUPABASE_ANON_KEY=eyJ...   # 公开密钥，可进前端
 | M0 | 项目文档（本目录） | ✅ |
 | M1 | 静态原型：主页 + 服务详情页示例 + 文章列表/详情，mock 数据，三页互通 | ✅ |
 | M2 | Supabase 接入：建表 + 导入旧文与 entries/profile；lib/api 切真数据（mock 保留作离线回退）| ✅ |
-| M3 | 部署 CF Pages 绑定 hub.alice001.top；RSS / sitemap / og-image 补齐 | 🔶 已上线，分发三件套待做 |
+| M3 | 部署 + RSS / sitemap / og-image 分发三件套 | ✅ |
 | M4 | 动效打磨、响应式、私域占位入口（⚿） | ⬜ |
 | 远期 | 站内 admin 页、评论、新入口（lab 等） | ⬜ |
 

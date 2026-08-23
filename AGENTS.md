@@ -13,6 +13,7 @@ arcane orion 的个人主站（hub + 房间两层结构），Astro + Supabase + 
 
 ## 硬规则（违反即返工）
 
+0. **先读 DEVELOPMENT.md**：架构/契约/设计令牌/部署细节都在里面，本文件只是索引与红线
 1. **文档同步**：任何架构、数据模型、设计系统的变更，必须同步更新 `docs/DEVELOPMENT.md` 对应章节。文档是唯一上下文来源，允许文档过时等于让未来会话失忆
 2. **数据访问边界**：组件禁止直接调用 supabase-js，一律经 `src/lib/api/*`
 3. **契约先行**：接口形状变更必须先改 `specs/openapi.yaml` 再生成类型再写代码；禁止裸写响应类型
@@ -30,6 +31,15 @@ arcane orion 的个人主站（hub + 房间两层结构），Astro + Supabase + 
 - 精选文章手动标记（posts.featured）
 - 后台 v1 = Supabase Studio，不自建 admin
 
+## 常用命令速查
+
+```bash
+npm run dev            # 本地开发 http://localhost:4321
+npm run build          # 构建（SSG，构建时拉 Supabase 数据）
+node scripts/gen-sql.mjs  # 修改 seed-data.mjs 后重新生成 supabase/seed.sql
+node scripts/og.mjs    # 修改 public/og.svg 后重新生成分享图
+```
+
 ## 当前阶段
 
-见 README.md 路线图。完成后更新该表状态。
+见 README.md 路线图。完成后更新该表状态。M0-M3 已完成；剩余：M4 动效打磨、私域实现、远期 admin 页。
