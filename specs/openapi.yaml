@@ -106,6 +106,7 @@ components:
         icon:     { type: string, nullable: true, description: "图标标识符，v1 用 emoji 占位" }
         accent:   { type: string, nullable: true }
         size_hint:{ type: string, enum: [sm, md, lg], default: md }
+        section: { type: string, enum: [blog, works, services], description: "首页分栏：博客独栏/作品/服务" }
         sort:     { type: integer }
         visible:  { type: boolean }
         landing_description_md: { type: string, nullable: true, description: "service 类型详情页正文" }

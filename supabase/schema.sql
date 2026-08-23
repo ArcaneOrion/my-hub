@@ -13,6 +13,7 @@ create table if not exists public.entries (
   size_hint   text not null default 'md' check (size_hint in ('sm','md','lg')),
   sort        int  not null default 100,
   visible     bool not null default true,
+  section     text not null default 'works',
   landing_description_md text,
   status      text check (status in ('running','building','archived')),
   external_url text,

@@ -9,17 +9,18 @@ export const mockProfile: Profile = {
 };
 
 export const mockEntries: Entry[] = [
+  // ── 博客（独栏）─────────────────────────────────────────────
   {
-    id: 'posts', kind: 'internal', title: '文章', tagline: '写作与思考：结构、AI、量化',
-    icon: '✍️', size_hint: 'lg', sort: 10,
+    id: 'posts', kind: 'internal', title: '博客', tagline: '写作与思考：结构、AI、量化',
+    icon: '✍️', section: 'blog', sort: 10,
   },
+  // ── 作品 ───────────────────────────────────────────────────
   {
     id: 'rss-digest', kind: 'service', title: 'rss-digest', tagline: 'AI × 量化信息聚合推送',
-    icon: '📡', size_hint: 'md', sort: 20, status: 'running',
+    icon: '📡', size_hint: 'md', sort: 20, section: 'works', status: 'running',
     external_url: 'https://rss.alice001.top/',
     landing_description_md: [
-      '把分散在各个信息源里的 AI 与量化内容，聚合、筛选并按节奏推送出来。',
-      '',
+      '把分散在各个信息源里的 AI 与量化内容，聚合、筛选并按节奏推送出来。', '',
       '- 自动抓取多个订阅源，AI 摘要降低阅读负担',
       '- 部署在 Cloudflare Workers，稳定运行中',
       '- 我自己每天在用的信息基础设施',
@@ -27,11 +28,10 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'fit-log', kind: 'service', title: 'fit-log', tagline: '健身打卡平台',
-    icon: '💪', size_hint: 'md', sort: 30, status: 'running',
+    icon: '💪', size_hint: 'md', sort: 30, section: 'works', status: 'running',
     external_url: 'https://fit.alice001.top/',
     landing_description_md: [
-      '多人健身打卡社区：动作库、饮食记录、数据看板，配一个 AI 教练。',
-      '',
+      '多人健身打卡社区：动作库、饮食记录、数据看板，配一个 AI 教练。', '',
       '- PWA + APK，手机上直接用',
       '- 支持邀请制多用户',
       '- 持续迭代中的产品',
@@ -39,29 +39,48 @@ export const mockEntries: Entry[] = [
   },
   {
     id: 'judgment-arena', kind: 'service', title: 'judgment-arena', tagline: 'AI 当裁判的判断力训练场',
-    icon: '⚖️', size_hint: 'md', sort: 40, status: 'running',
+    icon: '⚖️', size_hint: 'md', sort: 40, section: 'works', status: 'running',
     external_url: 'https://arena.alice001.top/',
     landing_description_md: [
-      '社会博弈模拟器：AI 扮演 GM，玩家在社会情境中做判断并获得反馈。',
-      '',
+      '社会博弈模拟器：AI 扮演 GM，玩家在社会情境中做判断并获得反馈。', '',
       '- 全栈实现，已部署上线',
       '- 训练判断力这件事的产品化尝试',
     ].join('\n'),
   },
   {
-    id: 'price-watch', kind: 'service', title: 'price-watch', tagline: '多标的行情监控看板',
-    icon: '👁', size_hint: 'sm', sort: 50, status: 'running',
-    external_url: null,
+    id: 'languages-en', kind: 'service', title: 'languages-en', tagline: '英语 × 科技资讯学习应用',
+    icon: '🌐', size_hint: 'md', sort: 45, section: 'works', status: 'building', external_url: null,
     landing_description_md: [
-      '15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。',
-      '',
+      '英文科技/经济资讯阅读应用：以消费真实资讯为目的，语言习得是副产品。', '',
+      '- 点段显译、点词弹卡，查词摩擦趋近于零',
+      '- 灵感来源：《AI 时代最需要的四个技能》',
+      '- 构建中，敬请期待',
+    ].join('\n'),
+  },
+  {
+    id: 'price-watch', kind: 'service', title: 'price-watch', tagline: '多标的行情监控看板',
+    icon: '👁', size_hint: 'sm', sort: 50, section: 'works', status: 'running', external_url: null,
+    landing_description_md: [
+      '15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。', '',
       '- 自用工具，未公开访问',
     ].join('\n'),
   },
   {
     id: 'github', kind: 'external', title: 'GitHub', tagline: '全部代码仓库',
-    icon: '🐙', size_hint: 'sm', sort: 60,
+    icon: '🐙', size_hint: 'sm', sort: 60, section: 'works',
     external_url: 'https://github.com/ArcaneOrion',
+  },
+  // ── 服务 ───────────────────────────────────────────────────
+  {
+    id: 'newapi', kind: 'service', title: 'AI 中转站', tagline: '公益 · OpenAI 兼容接口',
+    icon: '🛰️', size_hint: 'md', sort: 70, section: 'services', status: 'running',
+    external_url: 'https://newapi.alice001.top/',
+    landing_description_md: [
+      '面向社区的公益 AI 接口中转服务。', '',
+      '- OpenAI 兼容格式，接入即用',
+      '- 聚合多个上游渠道',
+      '- 免费提供，社区公益运营',
+    ].join('\n'),
   },
 ];
 

@@ -5,21 +5,61 @@ import EntryCard from '../components/EntryCard.astro';
 import PostCard from '../components/PostCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import { getEntries } from '../lib/api/entries';
-import { getFeaturedPosts } from '../lib/api/posts';
+import { getFeaturedPosts, getPostMetas } from '../lib/api/posts';
 import { getProfile } from '../lib/api/profile';
 
-const [entries, featured, profile] = await Promise.all([getEntries(), getFeaturedPosts(4), getProfile()]);
+const [entries, featured, profile, allPosts] = await Promise.all([
+  getEntries(),
+  getFeaturedPosts(4),
+  getProfile(),
+  getPostMetas(),
+]);
+
+// 分栏：section 缺失时按 kind 兜底（兼容迁移前的旧数据）
+const sectionOf = (e: (typeof entries)[number]) =>
+  e.section ?? (e.kind === 'internal' ? 'blog' : 'works');
+
+const blogEntry = entries.find((e) => sectionOf(e) === 'blog');
+const works = entries.filter((e) => sectionOf(e) === 'works');
+const services = entries.filter((e) => sectionOf(e) === 'services');
 ---
 
 <Base>
   <div class="pt-10 md:pt-14">
     <ProfileBlock profile={profile} />
 
-    <!-- 入口卡片区：Bento 不等宽网格 -->
+    <!-- 博客：独放一栏 -->
+    {blogEntry && (
+      <section class="mt-12">
+        <a href={`/${blogEntry.id}`} class="card rise group flex items-center gap-5 p-6 md:p-7" style="--i:1">
+          <span class="text-[32px] leading-none" aria-hidden="true">{blogEntry.icon}</span>
+          <div class="flex-1">
+            <h2 class="text-lg font-bold tracking-tight md:text-xl">
+              {blogEntry.title}
+              <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)]">→</span>
+            </h2>
+            <p class="mt-1 text-[13.5px]" style="color: var(--ink-muted);">
+              {blogEntry.tagline} · 共 {allPosts.length} 篇
+            </p>
+          </div>
+          <span class="metalabel hidden sm:block">writing</span>
+        </a>
+      </section>
+    )}
+
+    <!-- 精选文章 -->
     <section class="mt-12">
-      <SectionHeader title="入口" />
+      <SectionHeader title="精选文章" href="/posts" />
+      <div class="grid gap-4 sm:grid-cols-2">
+        {featured.map((post, i) => <PostCard post={post} index={i + 2} />)}
+      </div>
+    </section>
+
+    <!-- 作品 -->
+    <section class="mt-14">
+      <SectionHeader title="作品" />
       <div class="grid auto-rows-[minmax(150px,auto)] grid-cols-2 gap-4 md:grid-cols-4">
-        {entries.map((entry, i) => (
+        {works.map((entry, i) => (
           <div
             class:list={[
               entry.size_hint === 'lg' && 'col-span-2 row-span-2',
@@ -27,19 +67,22 @@ const [entries, featured, profile] = await Promise.all([getEntries(), getFeature
               entry.size_hint === 'md' && 'col-span-1',
             ]}
           >
-            <EntryCard entry={entry} index={i + 1} />
+            <EntryCard entry={entry} index={i + 2} />
           </div>
         ))}
       </div>
-      <p class="metalabel mt-3">入口由数据驱动 · 未来会更多</p>
     </section>
 
-    <!-- 精选文章 -->
-    <section class="mt-14">
-      <SectionHeader title="精选文章" href="/posts" />
-      <div class="grid gap-4 sm:grid-cols-2">
-        {featured.map((post, i) => <PostCard post={post} index={i} />)}
-      </div>
-    </section>
+    <!-- 服务 -->
+    {services.length > 0 && (
+      <section class="mt-14">
+        <SectionHeader title="服务" />
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((entry, i) => (
+            <EntryCard entry={{ ...entry, size_hint: 'md' }} index={i + 2} />
+          ))}
+        </div>
+      </section>
+    )}
   </div>
 </Base>

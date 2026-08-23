@@ -48,7 +48,7 @@ export async function getStaticPaths() {
         </a>
       ) : (
         <span class="inline-flex items-center rounded-xl px-5 py-2.5 text-sm" style="background: var(--line); color: var(--ink-muted);">
-          自用工具 · 未公开访问
+          {entry.status === 'building' ? '构建中 · 尚未上线' : '自用工具 · 未公开访问'}
         </span>
       )}
     </div>
