@@ -28,13 +28,13 @@ on conflict (id) do update set name = excluded.name, intro = excluded.intro, mot
 
 // entries
 for (const e of entries) {
-  const cols = `id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md`;
-  const vals = `${q(e.id)}, ${q(e.kind)}, ${q(e.title)}, ${e.tagline ? q(e.tagline) : 'null'}, ${e.icon ? q(e.icon) : 'null'}, ${q(e.size_hint ?? 'md')}, ${e.sort ?? 100}, true, ${e.status ? q(e.status) : 'null'}, ${e.external_url ? q(e.external_url) : 'null'}, ${e.landing_description_md ? dq(e.landing_description_md) : 'null'}`;
+  const cols = `id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md`;
+  const vals = `${q(e.id)}, ${q(e.kind)}, ${q(e.title)}, ${e.tagline ? q(e.tagline) : 'null'}, ${e.icon ? q(e.icon) : 'null'}, ${q(e.size_hint ?? 'md')}, ${e.sort ?? 100}, true, ${q(e.section ?? 'works')}, ${e.status ? q(e.status) : 'null'}, ${e.external_url ? q(e.external_url) : 'null'}, ${e.landing_description_md ? dq(e.landing_description_md) : 'null'}`;
   out.push(`insert into entries (${cols}) values (${vals})
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;`);
 }
 

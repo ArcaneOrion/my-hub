@@ -77,9 +77,7 @@ paths:
           description: Post 全文（仅 visibility=public 可被匿名读取）
           content:
             application/json:
-              schema:
-                type: object
-                items: { $ref: "#/components/schemas/Post" }
+              schema: { $ref: "#/components/schemas/Post" }
 
   /profile:
     get:

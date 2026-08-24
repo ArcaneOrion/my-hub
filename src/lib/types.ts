@@ -3,6 +3,8 @@
 export type EntryKind = 'internal' | 'service' | 'external';
 export type EntryStatus = 'running' | 'building' | 'archived';
 export type SizeHint = 'sm' | 'md' | 'lg';
+/** 首页分栏：博客独栏 / 作品 / 服务 */
+export type EntrySection = 'blog' | 'works' | 'services';
 
 export interface Entry {
   id: string;
@@ -14,6 +16,7 @@ export interface Entry {
   size_hint?: SizeHint;
   sort?: number;
   visible?: boolean;
+  section?: EntrySection;
   landing_description_md?: string | null;
   status?: EntryStatus | null;
   external_url?: string | null;

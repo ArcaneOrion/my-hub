@@ -7,14 +7,14 @@
 insert into profile (id, name, intro, motto) values (1, 'arcane orion', '在构建自己的超级组织：写文章、造产品，把想法变成运行中的服务。', '没有结构，就没有理解。')
 on conflict (id) do update set name = excluded.name, intro = excluded.intro, motto = excluded.motto;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('posts', 'internal', '博客', '写作与思考：结构、AI、量化', '✍️', 'md', 10, true, null, null, null)
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('posts', 'internal', '博客', '写作与思考：结构、AI、量化', '✍️', 'md', 10, true, 'blog', null, null, null)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('rss-digest', 'service', 'rss-digest', 'AI × 量化信息聚合推送', '📡', 'md', 20, true, 'running', 'https://rss.alice001.top/', $md$把分散在各个信息源里的 AI 与量化内容，聚合、筛选并按节奏推送出来。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('rss-digest', 'service', 'rss-digest', 'AI × 量化信息聚合推送', '📡', 'md', 20, true, 'works', 'running', 'https://rss.alice001.top/', $md$把分散在各个信息源里的 AI 与量化内容，聚合、筛选并按节奏推送出来。
 
 - 自动抓取多个订阅源，AI 摘要降低阅读负担
 - 部署在 Cloudflare Workers，稳定运行中
@@ -22,10 +22,10 @@ insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, s
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('fit-log', 'service', 'fit-log', '健身打卡平台', '💪', 'md', 30, true, 'running', 'https://fit.alice001.top/', $md$多人健身打卡社区：动作库、饮食记录、数据看板，配一个 AI 教练。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('fit-log', 'service', 'fit-log', '健身打卡平台', '💪', 'md', 30, true, 'works', 'running', 'https://fit.alice001.top/', $md$多人健身打卡社区：动作库、饮食记录、数据看板，配一个 AI 教练。
 
 - PWA + APK，手机上直接用
 - 支持邀请制多用户
@@ -33,20 +33,20 @@ insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, s
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('judgment-arena', 'service', 'judgment-arena', 'AI 当裁判的判断力训练场', '⚖️', 'md', 40, true, 'running', 'https://arena.alice001.top/', $md$社会博弈模拟器：AI 扮演 GM，玩家在社会情境中做判断并获得反馈。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('judgment-arena', 'service', 'judgment-arena', 'AI 当裁判的判断力训练场', '⚖️', 'md', 40, true, 'works', 'running', 'https://arena.alice001.top/', $md$社会博弈模拟器：AI 扮演 GM，玩家在社会情境中做判断并获得反馈。
 
 - 全栈实现，已部署上线
 - 训练判断力这件事的产品化尝试$md$)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('languages-en', 'service', 'languages-en', '英语 × 科技资讯学习应用', '🌐', 'md', 45, true, 'building', null, $md$英文科技/经济资讯阅读应用：以消费真实资讯为目的，语言习得是副产品。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('languages-en', 'service', 'languages-en', '英语 × 科技资讯学习应用', '🌐', 'md', 45, true, 'works', 'building', null, $md$英文科技/经济资讯阅读应用：以消费真实资讯为目的，语言习得是副产品。
 
 - 点段显译、点词弹卡，查词摩擦趋近于零
 - 灵感来源：《AI 时代最需要的四个技能》
@@ -54,26 +54,26 @@ insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, s
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('price-watch', 'service', 'price-watch', '多标的行情监控看板', '👁', 'sm', 50, true, 'running', null, $md$15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('price-watch', 'service', 'price-watch', '多标的行情监控看板', '👁', 'sm', 50, true, 'works', 'running', null, $md$15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。
 
 - 自用工具，未公开访问$md$)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('github', 'external', 'GitHub', '全部代码仓库', '🐙', 'sm', 60, true, null, 'https://github.com/ArcaneOrion', null)
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('github', 'external', 'GitHub', '全部代码仓库', '🐙', 'sm', 60, true, 'works', null, 'https://github.com/ArcaneOrion', null)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, status, external_url, landing_description_md) values ('newapi', 'service', 'AI 中转站', '公益 · OpenAI 兼容接口', '🛰️', 'md', 70, true, 'running', 'https://newapi.alice001.top/', $md$面向社区的公益 AI 接口中转服务。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('newapi', 'service', 'AI 中转站', '公益 · OpenAI 兼容接口', '🛰️', 'md', 70, true, 'services', 'running', 'https://newapi.alice001.top/', $md$面向社区的公益 AI 接口中转服务。
 
 - OpenAI 兼容格式，接入即用
 - 聚合多个上游渠道
@@ -81,7 +81,7 @@ insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, s
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
-  visible = excluded.visible, status = excluded.status,
+  visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
 insert into posts (slug, title, summary, content_md, tags, featured, visibility, published_at, updated_at)
