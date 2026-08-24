@@ -5,6 +5,7 @@
   --ink: #1C1917;
   --ink-muted: #78716C;
   --line: #E7E0D8;
+  --line-strong: #D9CFC2;    /* 卡片 hover 边框加深 */
   --accent: #B45309;          /* 占位强调色，待站主定 */
 
   --radius-card: 16px;

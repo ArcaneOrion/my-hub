@@ -43,8 +43,8 @@ const canonical = new URL(canonicalPath, siteOrigin).href;
     <ClientRouter />
   </head>
   <body class="min-h-screen">
-    <!-- 顶栏 -->
-    <header class="sticky top-0 z-50 backdrop-blur-md" style="background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line);">
+    <!-- 顶栏（页面切换时保持持久，不参与过渡重绘） -->
+    <header transition:persist="site-header" class="sticky top-0 z-50 backdrop-blur-md" style="background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line);">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
         <a href="/" class="text-[15px] font-bold tracking-tight" style="transition: opacity var(--dur-fast);">
           arcane<span style="color: var(--accent);">.</span>orion
