@@ -1,13 +1,18 @@
 ---
 import Base from '../../layouts/Base.astro';
 import MarkdownIt from 'markdown-it';
+import katexPluginMod from '@vscode/markdown-it-katex';
+import 'katex/dist/katex.min.css';
 import { getPostBySlug, getAllSlugs } from '../../lib/api/posts';
+
+// 该插件发布物为 CJS 双层包装（{ default: fn }），按实际形态解包
+const katexPlugin = (katexPluginMod as { default?: unknown }).default ?? katexPluginMod;
 
 const { slug } = Astro.params;
 const post = await getPostBySlug(slug!);
 if (!post) return Astro.redirect('/posts');
 
-const md = new MarkdownIt({ html: false, linkify: true });
+const md = new MarkdownIt({ html: false, linkify: true }).use(katexPlugin as Parameters<MarkdownIt['use']>[0]);
 const content = md.render(post.content_md);
 const date = new Date(post.published_at).toLocaleDateString('zh-CN');
 export async function getStaticPaths() {
