@@ -184,26 +184,26 @@ my-hub/
 
 ## 6. 设计系统
 
-### 6.1 设计令牌草案（tokens.css 初始值，可调）
+### 6.1 设计令牌（tokens.css，双主题）
+
+tokens.css 定义浅色（暖白）与深色（暖黑）两套变量：深色挂在 `[data-theme='dark']` 选择器下，由 Base.astro 头部内联脚本写入 `<html data-theme>`；无 JS 时经 `prefers-color-scheme` 媒体查询回退。组件一律引用变量，禁止写死颜色值——这是双主题零成本适配的前提。
 
 ```css
-:root {
-  /* 暖白色调 */
-  --bg: #FAF7F2;            /* 页面底 */
-  --surface: #FFFFFF;        /* 卡片面 */
-  --ink: #1C1917;            /* 正文近黑 */
-  --ink-muted: #78716C;      /* 次要文字 */
-  --line: #E7E0D8;           /* 分隔线 */
-  --accent: TBD;             /* 强调色待站主定，暂用 #B45309 (暖棕橙) 占位 */
-
-  --radius-card: 16px;
-  --radius-sm: 10px;
-  --shadow-rest: 0 1px 2px rgb(28 25 23 / .05), 0 4px 12px rgb(28 25 23 / .06);
-  --shadow-hover: 0 2px 4px rgb(28 25 23 / .06), 0 12px 28px rgb(28 25 23 / .10);
-
-  --dur-fast: 150ms;  --dur-move: 240ms;  --ease-out: cubic-bezier(.22,.61,.36,1);
+:root {                    /* 浅色：暖白 */
+  --bg: #FAF7F2;  --surface: #FFFFFF;
+  --ink: #1C1917; --ink-muted: #78716C;
+  --line: #E7E0D8; --line-strong: #D9CFC2;   /* hover 边框加深 */
+  --accent: #B45309;         /* 占位强调色，待站主定 */
+}
+[data-theme='dark'] {      /* 深色：同族色相降亮度 */
+  --bg: #16130F;  --surface: #201B15;
+  --ink: #EDE7DC; --ink-muted: #A79C8C;
+  --line: #372F25; --line-strong: #4C4335;
+  --accent: #E08A3C;         /* 深色底提亮同族色 */
 }
 ```
+
+阴影在深色下加深透明度补偿对比度；`color-scheme` 随主题声明（滚动条/表单控件跟随）。
 
 ### 6.2 排版
 
@@ -211,17 +211,28 @@ my-hub/
 - 字体栈：中文 `"Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`；等宽 `"JetBrains Mono", Consolas, monospace`（仅用于状态、meta 小字）。不引外部大字体包，系统栈优先
 - 文章详情：行长约 68ch，KaTeX 公式渲染保留
 
-### 6.3 动效清单（克制，全部 ≤250ms）
+### 6.3 动效清单（基础交互动效 ≤250ms；进阶项克制使用）
 
 | 场景 | 效果 |
 |---|---|
-| 首屏进入 | 卡片错峰淡入上移（stagger 60ms） |
-| 卡片 hover | 浮起 4px + shadow 从 rest 到 hover |
+| 首屏进入 | 卡片错峰淡入上移（stagger 60ms，封顶 300ms 防长尾） |
+| 卡片 hover | 浮起 4px + shadow rest→hover + 边框 --line→--line-strong |
+| 卡片按压 | `:active` 轻微下沉回弹（触屏反馈，80ms） |
 | 状态点 ●运行中 | 2.5s 缓慢呼吸（opacity 脉冲） |
 | 座右铭区 | 极轻暖色光斑缓慢漂移（20s 循环，opacity < 0.5） |
-| 页面切换 | 浏览器原生 + Astro View Transitions 淡入 |
+| 页面切换 | Astro View Transitions 淡入；顶栏 `transition:persist` 不重绘 |
+| 列表→文章标题 | 共享元素过渡：PostCard 标题与详情页 h1 同名 `transition:name={slug}` 平滑归位 |
+| 首页背景光斑 | 滚动视差：两层光斑按 -0.05 / -0.10 系数位移（rAF 节流，仅 transform） |
 
-禁止：视差滚动、大型粒子、入场长动画。原则：动效提示可交互性，不表演。
+原则不变：动效提示可交互性与空间连续性，不做表演性堆砌。所有动效在 `prefers-reduced-motion: reduce` 下关停（含视差与呼吸点）。
+
+### 6.3.1 配色模式（浅色 / 深色，两态切换）
+
+- 顶栏切换按钮：默认浅色，**点击即在浅 ⇄ 深之间翻转**（无第三态）
+- 偏好存 `localStorage('theme-pref')`；读取时非 `'dark'` 一律按浅色处理（兼容历史脏值）
+- 跨标签同步：监听 `storage` 事件，一个窗口切换、其他窗口跟随
+- Base.astro 头部内联脚本阻塞执行写 `<html data-theme>`，**无闪烁**
+- 切换按钮用 document 级事件委托绑定——View Transitions 换页后无需重绑
 
 ### 6.4 文案规范（站主明确要求）
 
