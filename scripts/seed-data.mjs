@@ -40,7 +40,7 @@ export function loadPosts() {
 
 export const profile = {
   id: 1,
-  name: 'arcane orion',
+  name: 'Arcane Orion',
   intro: '在构建自己的超级组织：写文章、造产品，把想法变成运行中的服务。',
   motto: '没有结构，就没有理解。',
 };

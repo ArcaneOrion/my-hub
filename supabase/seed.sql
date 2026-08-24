@@ -4,7 +4,7 @@
 
 
 
-insert into profile (id, name, intro, motto) values (1, 'arcane orion', '在构建自己的超级组织：写文章、造产品，把想法变成运行中的服务。', '没有结构，就没有理解。')
+insert into profile (id, name, intro, motto) values (1, 'Arcane Orion', '在构建自己的超级组织：写文章、造产品，把想法变成运行中的服务。', '没有结构，就没有理解。')
 on conflict (id) do update set name = excluded.name, intro = excluded.intro, motto = excluded.motto;
 
 insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('posts', 'internal', '博客', '写作与思考：结构、AI、量化', '✍️', 'md', 10, true, 'blog', null, null, null)
