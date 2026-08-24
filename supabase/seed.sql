@@ -46,20 +46,19 @@ on conflict (id) do update set
   visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('languages-en', 'service', 'languages-en', '英语 × 科技资讯学习应用', '🌐', 'md', 45, true, 'works', 'building', null, $md$英文科技/经济资讯阅读应用：以消费真实资讯为目的，语言习得是副产品。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('languages-en', 'service', 'languages-en', '英文日报学习平台', '🌐', 'md', 45, true, 'works', 'running', 'https://en.alice001.top/', $md$以英文日报为材料的学习平台：读真实资讯，学场景语言。
 
-- 点段显译、点词弹卡，查词摩擦趋近于零
-- 灵感来源：《AI 时代最需要的四个技能》
-- 构建中，敬请期待$md$)
+- 点段显译、点词弹卡，查词摩擦趋近于零$md$)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,
   visible = excluded.visible, section = excluded.section, status = excluded.status,
   external_url = excluded.external_url, landing_description_md = excluded.landing_description_md;
 
-insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('price-watch', 'service', 'price-watch', '多标的行情监控看板', '👁', 'sm', 50, true, 'works', 'running', null, $md$15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。
+insert into entries (id, kind, title, tagline, icon, size_hint, sort, visible, section, status, external_url, landing_description_md) values ('price-watch', 'service', 'price-watch', '汇率 / 加密 / 股票价格看板', '👁', 'sm', 50, true, 'works', 'running', 'https://price.alice001.top/', $md$聚合多来源行情的价格看板：汇率、加密货币与股票。
 
-- 自用工具，未公开访问$md$)
+- 15 分钟自动更新，内置 MACD 走势指标
+- 数据源：ECB / 新浪 / CoinGecko$md$)
 on conflict (id) do update set
   kind = excluded.kind, title = excluded.title, tagline = excluded.tagline,
   icon = excluded.icon, size_hint = excluded.size_hint, sort = excluded.sort,

@@ -85,21 +85,20 @@ export const entries = [
     ].join('\n'),
   },
   {
-    id: 'languages-en', kind: 'service', title: 'languages-en', tagline: '英语 × 科技资讯学习应用',
-    icon: '🌐', size_hint: 'md', sort: 45, section: 'works', status: 'building', external_url: null,
+    id: 'languages-en', kind: 'service', title: 'languages-en', tagline: '英文日报学习平台',
+    icon: '🌐', size_hint: 'md', sort: 45, section: 'works', status: 'running', external_url: 'https://en.alice001.top/',
     landing_description_md: [
-      '英文科技/经济资讯阅读应用：以消费真实资讯为目的，语言习得是副产品。', '',
+      '以英文日报为材料的学习平台：读真实资讯，学场景语言。', '',
       '- 点段显译、点词弹卡，查词摩擦趋近于零',
-      '- 灵感来源：《AI 时代最需要的四个技能》',
-      '- 构建中，敬请期待',
     ].join('\n'),
   },
   {
-    id: 'price-watch', kind: 'service', title: 'price-watch', tagline: '多标的行情监控看板',
-    icon: '👁', size_hint: 'sm', sort: 50, section: 'works', status: 'running', external_url: null,
+    id: 'price-watch', kind: 'service', title: 'price-watch', tagline: '汇率 / 加密 / 股票价格看板',
+    icon: '👁', size_hint: 'sm', sort: 50, section: 'works', status: 'running', external_url: 'https://price.alice001.top/',
     landing_description_md: [
-      '15 分钟粒度采集 22 个标的的行情，落 D1 时序库并渲染看板。', '',
-      '- 自用工具，未公开访问',
+      '聚合多来源行情的价格看板：汇率、加密货币与股票。', '',
+      '- 15 分钟自动更新，内置 MACD 走势指标',
+      '- 数据源：ECB / 新浪 / CoinGecko',
     ].join('\n'),
   },
   {
