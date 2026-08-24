@@ -11,7 +11,10 @@ const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} — ${SITE.name}` : SITE.title;
 const siteOrigin = Astro.site ?? new URL('https://hub.alice001.top');
 const ogImage = new URL('/og-image.png', siteOrigin).href;
-const canonical = new URL(Astro.url.pathname, siteOrigin).href;
+// build.format='directory'：最终服务 URL 带尾斜杠（与 sitemap / RSS 一致），canonical 对齐之
+const pathname = Astro.url.pathname;
+const canonicalPath = pathname === '/' || pathname.endsWith('/') ? pathname : `${pathname}/`;
+const canonical = new URL(canonicalPath, siteOrigin).href;
 ---
 
 <!DOCTYPE html>
@@ -48,7 +51,7 @@ const canonical = new URL(Astro.url.pathname, siteOrigin).href;
         </a>
         <nav class="flex items-center gap-5 text-[13.5px]" style="color: var(--ink-muted);">
           <a href="/posts" class="hover:text-[var(--ink)] transition-colors">文章</a>
-          <a href="https://github.com/ArcaneOrion" target="_blank" rel="noopener" class="hover:text-[var(--ink)] transition-colors">GitHub</a>
+          <a href={SITE.github} target="_blank" rel="noopener" class="hover:text-[var(--ink)] transition-colors">GitHub</a>
           <span title="私域入口 · 建设中" class="cursor-help select-none opacity-40">⚿</span>
         </nav>
       </div>
@@ -60,7 +63,7 @@ const canonical = new URL(Astro.url.pathname, siteOrigin).href;
 
     <footer class="border-t" style="border-color: var(--line);">
       <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-5 py-6 text-xs" style="color: var(--ink-muted);">
-        <span>© 2026 arcane orion</span>
+        <span>© {new Date().getFullYear()} arcane orion</span>
         <span class="font-mono text-[11px] tracking-widest">{SITE.domain}</span>
       </div>
     </footer>

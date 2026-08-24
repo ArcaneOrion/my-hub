@@ -13,7 +13,7 @@ export async function GET(context: APIContext) {
     items: posts.map((p) => ({
       title: p.title,
       description: p.summary,
-      link: `/posts/${p.slug}/`,
+      link: `/posts/${p.slug}/`, // @astrojs/rss 默认 trailingSlash:true，与 sitemap/服务 URL 一致
       pubDate: new Date(p.published_at),
       categories: p.tags,
     })),
