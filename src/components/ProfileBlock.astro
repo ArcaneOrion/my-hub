@@ -5,10 +5,9 @@ const { profile } = Astro.props;
 ---
 <section class="rise grid gap-4 md:grid-cols-[1fr_320px]" style="--i:0">
   <div class="card p-7">
-    <h1 class="text-[22px] font-bold leading-relaxed tracking-tight md:text-2xl">
-      我是 {profile.name}。<br/>
-      <span style="color: var(--ink-muted);">{profile.intro}</span>
-    </h1>
+    <!-- capitalize：DB 里 name 是小写，展示层统一首字母大写 -->
+    <h1 class="text-[24px] font-bold capitalize tracking-tight md:text-[28px]">{profile.name}</h1>
+    <p class="mt-2.5 text-[15px] leading-relaxed" style="color: var(--ink-muted);">{profile.intro}</p>
   </div>
   <!-- 座右铭卡：暖色轻光斑 -->
   <div class="card relative flex items-center overflow-hidden p-7">

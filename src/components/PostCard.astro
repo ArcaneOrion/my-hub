@@ -4,12 +4,16 @@ interface Props { post: PostMeta; index?: number }
 const { post, index = 0 } = Astro.props;
 const date = new Date(post.published_at).toLocaleDateString('zh-CN');
 ---
-<a href={`/posts/${post.slug}`} class="card rise block p-6" style={`--i:${index}`}>
+<a href={`/posts/${post.slug}`} class="card rise group block p-6" style={`--i:${index}`}>
   <div class="flex items-center gap-2 text-xs" style="color: var(--ink-muted);">
     <time datetime={post.published_at}>{date}</time>
     <span>·</span>
     <span class="font-mono uppercase tracking-widest">{post.tags.join(' / ')}</span>
   </div>
-  <h2 class="mt-2.5 text-[17px] font-bold tracking-tight">{post.title}</h2>
+  <!-- transition:name 与详情页 h1 配对：点击时标题平滑归位（共享元素过渡） -->
+  <h2 class="mt-2.5 text-[17px] font-bold tracking-tight" transition:name={post.slug}>
+    {post.title}
+    <span class="inline-block opacity-0 transition-all duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)] group-hover:opacity-100">→</span>
+  </h2>
   <p class="mt-2 line-clamp-2 text-[13.5px] leading-relaxed" style="color: var(--ink-muted);">{post.summary}</p>
 </a>

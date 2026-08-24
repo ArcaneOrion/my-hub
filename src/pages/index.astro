@@ -25,7 +25,13 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
 ---
 
 <Base>
-  <div class="pt-10 md:pt-14">
+  <div class="relative pt-10 md:pt-14">
+    <!-- 背景光斑：滚动视差分层（reduced-motion 时脚本自动关停） -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div data-parallax="-0.05" class="absolute left-[6%] top-24 h-56 w-56 rounded-full opacity-[0.13]" style="background: radial-gradient(closest-side, var(--accent), transparent); filter: blur(42px);"></div>
+      <div data-parallax="-0.10" class="absolute right-[4%] top-[430px] h-72 w-72 rounded-full opacity-[0.09]" style="background: radial-gradient(closest-side, var(--accent), transparent); filter: blur(52px);"></div>
+    </div>
+
     <ProfileBlock profile={profile} />
 
     <!-- 博客：独放一栏 -->
@@ -50,7 +56,7 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
     <!-- 作品 -->
     <section class="mt-14">
       <SectionHeader title="作品" />
-      <div class="grid auto-rows-[minmax(150px,auto)] grid-cols-2 gap-4 md:grid-cols-4">
+      <div class="grid auto-rows-[minmax(150px,auto)] grid-flow-dense grid-cols-2 gap-4 md:grid-cols-4">
         {works.map((entry, i) => (
           <div
             class:list={[
@@ -86,3 +92,29 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
     </section>
   </div>
 </Base>
+
+<script>
+  // 滚动视差：data-parallax 系数 × 滚动距离，rAF 节流，仅 transform（合成层，不掉帧）。
+  // reduced-motion 用户直接关停；每次 update 时重新查询节点，兼容 View Transitions 换页。
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const w = window as unknown as { __parallaxBound?: boolean };
+    if (!w.__parallaxBound) {
+      w.__parallaxBound = true;
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const y = window.scrollY;
+        document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
+          el.style.transform = `translate3d(0, ${(y * parseFloat(el.dataset.parallax ?? '0')).toFixed(1)}px, 0)`;
+        });
+      };
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      }, { passive: true });
+      update();
+    }
+  }
+</script>

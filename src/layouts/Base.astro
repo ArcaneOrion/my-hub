@@ -21,11 +21,30 @@ const canonical = new URL(canonicalPath, siteOrigin).href;
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
+    <!-- 配色初始化：阻塞执行防闪烁。两态偏好存 localStorage('theme-pref')，默认浅色 -->
+    <script is:inline>
+      (() => {
+        const applyTheme = () => {
+          const root = document.documentElement;
+          const pref = localStorage.getItem('theme-pref') === 'dark' ? 'dark' : 'light';
+          root.dataset.theme = pref;
+          root.dataset.themePref = pref;
+        };
+        // 首次完整加载：无偏好一律浅色
+        applyTheme();
+        // View Transitions 换页会用新文档覆盖 <html> 全部属性（swapRootAttributes），
+        // data-theme 随之丢失，且 is:inline 脚本不会重跑——必须在 after-swap 补挂一次，
+        // 否则跨页主题跳变（跟随系统回退）。is:inline 保证此监听随首个文档注册。
+        document.addEventListener('astro:after-swap', applyTheme);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FAF7F2" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16130F" />
 
     <!-- Open Graph / Twitter 分享卡片 -->
     <meta property="og:type" content="website" />
@@ -47,12 +66,27 @@ const canonical = new URL(canonicalPath, siteOrigin).href;
     <header transition:persist="site-header" class="sticky top-0 z-50 backdrop-blur-md" style="background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom: 1px solid var(--line);">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5">
         <a href="/" class="text-[15px] font-bold tracking-tight" style="transition: opacity var(--dur-fast);">
-          arcane<span style="color: var(--accent);">.</span>orion
+          Arcane<span style="color: var(--accent);">.</span>Orion
         </a>
         <nav class="flex items-center gap-5 text-[13.5px]" style="color: var(--ink-muted);">
           <a href="/posts" class="hover:text-[var(--ink)] transition-colors">文章</a>
           <a href={SITE.github} target="_blank" rel="noopener" class="hover:text-[var(--ink)] transition-colors">GitHub</a>
           <span title="私域入口 · 建设中" class="cursor-help select-none opacity-40">⚿</span>
+          <button
+            id="theme-toggle"
+            aria-label="切换深色 / 浅色主题"
+            title="切换深色 / 浅色主题"
+            class="grid h-7 w-7 place-items-center rounded-lg transition-colors hover:text-[var(--ink)]"
+            style="color: var(--ink-muted);"
+          >
+            <svg class="theme-icon icon-light" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.5"></circle>
+              <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8"></path>
+            </svg>
+            <svg class="theme-icon icon-dark" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.5 14.1A8.5 8.5 0 1 1 9.9 3.5a7 7 0 0 0 10.6 10.6z"></path>
+            </svg>
+          </button>
         </nav>
       </div>
     </header>
@@ -63,9 +97,33 @@ const canonical = new URL(canonicalPath, siteOrigin).href;
 
     <footer class="border-t" style="border-color: var(--line);">
       <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-5 py-6 text-xs" style="color: var(--ink-muted);">
-        <span>© {new Date().getFullYear()} arcane orion</span>
+        <span>© {new Date().getFullYear()} Arcane Orion · <a href="/rss.xml" class="transition-colors hover:text-[var(--accent)]">订阅</a></span>
         <span class="font-mono text-[11px] tracking-widest">{SITE.domain}</span>
       </div>
     </footer>
   </body>
 </html>
+
+<script>
+  // 配色两态切换：默认浅色，点击即在 浅 ⇄ 深 之间翻转。
+  // 事件委托绑定在 document 上，View Transitions 换页后依然生效。
+  type Pref = 'light' | 'dark';
+
+  function applyTheme(pref: Pref) {
+    const root = document.documentElement;
+    root.dataset.theme = pref;
+    root.dataset.themePref = pref;
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element) || !e.target.closest('#theme-toggle')) return;
+    const next: Pref = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('theme-pref', next);
+  });
+
+  // 跨标签/窗口同步：其他标签页改了偏好，这里跟着变
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'theme-pref') applyTheme(e.newValue === 'dark' ? 'dark' : 'light');
+  });
+</script>

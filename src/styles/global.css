@@ -12,7 +12,8 @@ body {
 .rise {
   opacity: 0;
   animation: rise-in var(--dur-move) var(--ease-out) forwards;
-  animation-delay: calc(var(--i, 0) * 60ms);
+  /* 封顶 300ms：卡片多时避免长尾等待 */
+  animation-delay: min(calc(var(--i, 0) * 60ms), 300ms);
 }
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(14px); }
@@ -48,6 +49,13 @@ body {
               border-color var(--dur-move) var(--ease-out);
 }
 .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--line-strong); }
+/* 触屏按压反馈 */
+.card:active { transform: translateY(-1px) scale(0.995); transition-duration: 80ms; }
+
+/* 配色切换按钮图标：按当前主题显示对应图标（浅=太阳，深=月亮） */
+.theme-icon { display: none; }
+[data-theme-pref='light'] #theme-toggle .icon-light { display: block; }
+[data-theme-pref='dark'] #theme-toggle .icon-dark { display: block; }
 
 /* mono 小标签 */
 .metalabel {

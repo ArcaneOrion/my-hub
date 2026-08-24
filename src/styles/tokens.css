@@ -1,5 +1,5 @@
 :root {
-  /* 暖白色调 */
+  /* ── 浅色主题：暖白 ─────────────────────────── */
   --bg: #FAF7F2;
   --surface: #FFFFFF;
   --ink: #1C1917;
@@ -7,6 +7,7 @@
   --line: #E7E0D8;
   --line-strong: #D9CFC2;    /* 卡片 hover 边框加深 */
   --accent: #B45309;          /* 占位强调色，待站主定 */
+  color-scheme: light;
 
   --radius-card: 16px;
   --radius-sm: 10px;
@@ -16,4 +17,37 @@
   --dur-fast: 150ms;
   --dur-move: 240ms;
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ── 深色主题：暖黑（同族色相降亮度）─────────────
+   由 Base.astro 头部内联脚本写入 <html data-theme>：两态翻转、无偏好默认浅色，
+   偏好存 localStorage('theme-pref')；换页后经 astro:after-swap 重新应用。 */
+[data-theme='dark'] {
+  --bg: #16130F;
+  --surface: #201B15;
+  --ink: #EDE7DC;
+  --ink-muted: #A79C8C;
+  --line: #372F25;
+  --line-strong: #4C4335;
+  --accent: #E08A3C;          /* 深色底提亮的同族色，随浅色占位一起待定 */
+  color-scheme: dark;
+
+  --shadow-rest: 0 1px 2px rgb(0 0 0 / 0.28), 0 4px 12px rgb(0 0 0 / 0.22);
+  --shadow-hover: 0 2px 4px rgb(0 0 0 / 0.34), 0 12px 28px rgb(0 0 0 / 0.38);
+}
+
+/* 无 JS 回退：未设 data-theme 时直接跟随系统（变量与上方 dark 块保持一致） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #16130F;
+    --surface: #201B15;
+    --ink: #EDE7DC;
+    --ink-muted: #A79C8C;
+    --line: #372F25;
+    --line-strong: #4C4335;
+    --accent: #E08A3C;
+    color-scheme: dark;
+    --shadow-rest: 0 1px 2px rgb(0 0 0 / 0.28), 0 4px 12px rgb(0 0 0 / 0.22);
+    --shadow-hover: 0 2px 4px rgb(0 0 0 / 0.34), 0 12px 28px rgb(0 0 0 / 0.38);
+  }
 }

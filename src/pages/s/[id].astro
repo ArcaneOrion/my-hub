@@ -42,7 +42,7 @@ export async function getStaticPaths() {
           target="_blank"
           rel="noopener"
           class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-transform active:scale-95"
-          style="background: var(--accent); color: #fff; box-shadow: var(--shadow-rest);"
+          style="background: var(--accent); color: var(--bg); box-shadow: var(--shadow-rest);"
         >
           访问 ↗ <span class="font-mono text-xs opacity-80">{new URL(entry.external_url).host}</span>
         </a>

@@ -13,6 +13,8 @@ const href =
       : `/${entry.id}`;
 
 const pad = entry.size_hint === 'lg' ? 'md:p-8 p-5' : entry.size_hint === 'sm' ? 'p-5' : 'p-6';
+/* 仅真正直接外链的卡（kind=external）用 ↗；service 卡去的是站内落地页，仍用 → */
+const glyph = entry.kind === 'external' ? '↗' : '→';
 ---
 <a
   href={href}
@@ -27,7 +29,7 @@ const pad = entry.size_hint === 'lg' ? 'md:p-8 p-5' : entry.size_hint === 'sm' ?
   <div>
     <h2 class={`font-bold tracking-tight ${entry.size_hint === 'lg' ? 'text-xl md:text-2xl' : 'text-[17px]'}`}>
       {entry.title}
-      <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)]">→</span>
+      <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)]">{glyph}</span>
     </h2>
     {entry.tagline && <p class="mt-1.5 text-[13.5px] leading-relaxed" style="color: var(--ink-muted);">{entry.tagline}</p>}
   </div>
