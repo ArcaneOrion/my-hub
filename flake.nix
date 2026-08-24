@@ -16,7 +16,7 @@
           name = "my-hub";
 
           buildInputs = with pkgs; [
-            nodejs_22
+            nodejs_24
             git
           ];
 
