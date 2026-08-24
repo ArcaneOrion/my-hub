@@ -1,7 +1,7 @@
 # my-hub 开发文档
 
 > 面向未来的开发会话（含无记忆系统的 AI）：本文档自足，读完即可接手开发。
-> 最后更新：M3 收口（2026-08-23）。
+> 最后更新：2026-08-24 —— 同步修：entries.section 分栏入契约/类型/种子、KaTeX 公式渲染落地、文档对齐实况。
 
 ---
 
@@ -53,6 +53,7 @@
 | 样式 | Tailwind CSS v4 + CSS 设计令牌（`styles/tokens.css`） | 工具类快速迭代；令牌保证主题一致性 |
 | 数据后端 | Supabase（托管云） | PostgREST 自动生成带 OpenAPI 文档的 REST API；Auth/Storage 现成，为未来私域预留；v1 零后端代码 |
 | 分发 | @astrojs/rss + @astrojs/sitemap + og-image | RSS 订阅、搜索引擎收录、社交分享卡片，见 §6.5 |
+| 正文渲染 | markdown-it + KaTeX（构建期） | 文章与服务详情在构建时渲染成静态 HTML，公式零客户端 JS 开销 |
 | 契约 | contract-first：`specs/openapi.yaml` 为接口唯一事实源 | 前端只依赖生成的类型，不依赖后端实现细节；后端可整体更换而不伤前端 |
 | 渲染策略 | SSG（构建时从 Supabase 拉数据）+ CF Pages 部署钩子 | SEO 与性能最优；内容变更后触发重新部署即可（v1 手动触发可接受） |
 | 部署 | Cloudflare Pages，域名 `hub.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动部署 |
@@ -89,6 +90,7 @@ create table entries (
   size_hint   text default 'md',         -- bento 尺寸建议: sm|md|lg
   sort        int  not null default 100,
   visible     bool not null default true,
+  section     text not null default 'works',   -- 首页分栏 blog|works|services（migration-002 引入）
   -- service 类型专用字段
   landing_description_md text,           -- /s/[id] 详情页正文（Markdown）
   status      text check (status in ('running','building','archived')),
@@ -121,6 +123,8 @@ create table profile (
 );
 ```
 
+**DDL 演进**：`supabase/schema.sql` 始终保持全量最新结构；增量变更另存 `supabase/migration-NNN-*.sql`（例：`migration-002-section.sql` 为 entries 增加 section 分栏），在 Supabase Studio SQL Editor 中执行。种子数据改 `scripts/seed-data.mjs` 后运行 `node scripts/gen-sql.mjs` 重新生成 `supabase/seed.sql`（幂等 upsert）。
+
 **读取规则**：前端任何查询必须带 `visible = true` / `visibility = 'public'` 过滤（unlisted/members 由未来私域会话处理）。
 
 ## 4. API 契约（contract-first）
@@ -137,8 +141,15 @@ create table profile (
 ```
 my-hub/
 ├── specs/openapi.yaml          # API 契约（事实源）
-├── supabase/schema.sql         # 表结构 DDL（版本化）
-├── scripts/seed.ts             # 旧博客 markdown → Supabase 导入脚本
+├── supabase/
+│   ├── schema.sql              # 全量表结构 DDL（保持最新）
+│   ├── migration-002-section.sql  # 增量迁移示例：entries.section 分栏
+│   └── seed.sql                # 幂等种子（由 scripts/gen-sql.mjs 生成，勿手改）
+├── scripts/
+│   ├── seed-data.mjs           # 种子数据装配：entries/profile 定义 + 解析 content/*.md
+│   ├── gen-sql.mjs             # seed-data.mjs → supabase/seed.sql
+│   ├── og.mjs                  # public/og.svg → og-image.png 分享图
+│   └── content/*.md            # 旧博客文章源（frontmatter + Markdown）
 ├── docs/                       # 本文档目录
 └── src/
     ├── styles/tokens.css       # 设计令牌：颜色/字号/间距/圆角/阴影/动效时长（唯一定义处）
@@ -154,6 +165,7 @@ my-hub/
     │   ├── EntryCard.astro     # 入口卡（bento 单元格）
     │   ├── PostCard.astro
     │   ├── ProfileBlock.astro
+    │   ├── StatusBadge.astro   # 服务状态点（运行中/构建中/已归档）
     │   └── SectionHeader.astro
     ├── layouts/Base.astro      # <head>/字体/全局样式/页脚
     └── pages/
@@ -235,7 +247,7 @@ my-hub/
 
 1. CF Dashboard → Workers & Pages → 连接 git 仓库
 2. 构建命令 `npm run build`，输出目录 `dist`
-3. 环境变量配置 `SUPABASE_URL` / `SUPABASE_ANON_KEY`
+3. 环境变量配置 `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY`（Astro 要求 PUBLIC_ 前缀才进构建期）
 4. Custom domain 绑 `hub.alice001.top`（DNS 已在同账号 CF，自动加 CNAME）
 5. 创建 Deploy Hook，供内容更新后触发重建
 
@@ -248,5 +260,5 @@ my-hub/
 ## 10. 已知未决项
 
 - [ ] 强调色（accent）：站主未定，当前占位 `#B45309`
-- [ ] 旧博客 5 篇文章迁移（scripts/seed.ts，M2 执行）
+- [x] 旧博客迁移已完成：4 篇经 scripts/seed-data.mjs → seed.sql 导入（新文章直接在 Studio 写）
 - [ ] 是否未来把主站升级到 apex 域名 alice001.top（当前按 blog 子域建设，不影响架构）
