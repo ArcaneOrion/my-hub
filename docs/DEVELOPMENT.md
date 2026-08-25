@@ -55,15 +55,15 @@
 | 分发 | @astrojs/rss + @astrojs/sitemap + og-image | RSS 订阅、搜索引擎收录、社交分享卡片，见 §6.5 |
 | 正文渲染 | markdown-it + KaTeX（构建期） | 文章与服务详情在构建时渲染成静态 HTML，公式零客户端 JS 开销 |
 | 契约 | contract-first：`specs/openapi.yaml` 为接口唯一事实源 | 前端只依赖生成的类型，不依赖后端实现细节；后端可整体更换而不伤前端 |
-| 渲染策略 | SSG（构建时从 Supabase 拉数据）+ CF Pages 部署钩子 | SEO 与性能最优；内容变更后触发重新部署即可（v1 手动触发可接受） |
-| 部署 | Cloudflare Pages，域名 `hub.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动部署 |
+| 渲染策略 | SSG（构建时从 Supabase 拉数据）+ Cloudflare Workers 静态托管 | SEO 与性能最优；内容变更后触发重建即可（v1 手动触发可接受） |
+| 部署 | Cloudflare Workers（静态资产托管），域名 `hub.alice001.top`（DNS 已在 CF） | 免费层足够；推送 git 自动构建 |
 
 **渲染策略备注**：若未来出现「发布后必须秒级可见」的需求，再评估 SSR adapter 或增量渲染。当前不做。
 
 **前后端关系图**：
 
 ```
-浏览器 ──> hub.alice001.top (CF Pages: Astro 静态产物)
+浏览器 ──> hub.alice001.top (Cloudflare Workers: Astro 静态产物)
                 │ 构建时 & 客户端按需
                 ▼
         xxxx.supabase.co (PostgREST REST API, 自带 OpenAPI 文档)
@@ -271,18 +271,25 @@ tokens.css 定义浅色（暖白）与深色（暖黑）两套变量：深色挂
   - 覆盖全部现有字段（含 tagline/accent/size_hint/status 等），不新增列
   - 实时预览：编辑表单旁并排渲染卡片 / 文章 / 身份块的实际效果；文章正文复用生产站同一套 markdown-it + KaTeX（`admin/server.mjs` 内 `/api/preview`），公式与线上一致
 - **Supabase Studio 仍是兜底**：写 SQL、跑 migration、直改表格，与本地管理端并存
-- **上线流**：本地管理端（或 Studio）改数据 → 触发 CF Pages Deploy Hook（或任意 git push）→ 构建时重新拉取 Supabase → 约 1 分钟生效。本地 `npm run dev` 是运行时拉取，改完立即可见
+- **上线流**：本地管理端（或 Studio）改数据 → 触发重建（推空 commit / Deployments 页 Retry / Deploy Hook）→ 构建时重新拉取 Supabase → 约 1 分钟生效。本地 `npm run dev` 是运行时拉取，改完立即可见
 - **站内登录版 admin 仍是远期项**：本地管理端已覆盖 v1 可视化需求；等真实多设备 / 多人协作痛点出现，再做 Supabase Auth 登录版
 
-## 8. 部署（CF Pages）
+## 8. 部署（Cloudflare Workers 静态资产托管）
 
-1. CF Dashboard → Workers & Pages → 连接 git 仓库
+实际部署平台是 **Cloudflare Workers**（静态资产托管，非 Pages）：Astro SSG 产物 `dist/` 作为静态资产部署；域名 `hub.alice001.top` 经「自定义域和路由」绑定（默认 Worker URL 为 `my-hub.arcaneorion-mail.workers.dev`）。
+
+1. CF Dashboard → Workers & Pages → `my-hub` 项目（git 集成：推送自动构建）
 2. 构建命令 `npm run build`，输出目录 `dist`
-3. 环境变量配置 `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY`（Astro 要求 PUBLIC_ 前缀才进构建期）
-4. Custom domain 绑 `hub.alice001.top`（DNS 已在同账号 CF，自动加 CNAME）
-5. 创建 Deploy Hook，供内容更新后触发重建
+3. **构建变量（Settings → Build → Build variables）必须配两个**，否则构建会**静默回退到内置 mock 假数据**（构建仍显示「成功」，极难察觉）：
+   - `PUBLIC_SUPABASE_URL` —— 普通变量，值同本地 `.env`
+   - `PUBLIC_SUPABASE_ANON_KEY` —— 选「**密钥**」类型（CF 后台对带 KEY 的值强制走 Secret，选普通变量会保存被拒）
+   - Astro 要求 PUBLIC_ 前缀才进构建期；`SUPABASE_SERVICE_ROLE_KEY` 只放本地 `.env`，绝不进 CF
+4. 自定义域名 `hub.alice001.top`（DNS 同账号 CF）
+5. 部署频率限制：短时间多次部署会触发冷却（Retry 按钮变灰 + 倒计时），等倒计时结束即可
 
-**内容变更后的上线流程**：Studio 改数据 → 触发 Deploy Hook（或任意 git push）→ 构建时重新拉取 Supabase 数据 → 约 1 分钟生效。
+**内容变更后的上线流程**：本地管理端（或 Studio）改 Supabase 数据 → 触发重建（推空 commit / Deployments 页 Retry deployment / Deploy Hook）→ 构建时重新拉取 Supabase → 约 1 分钟生效。
+
+**上线后必验**：刷新页面确认内容已更新。若内容仍是旧版（如英文标题 / 旧简介），优先怀疑构建变量缺失导致回退 mock——本地 `npm run build`（有 `.env`）产物应含真实数据，对比线上 HTML 是否与 mock 一致即可定位。
 
 ## 9. 里程碑与验收
 

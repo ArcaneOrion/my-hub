@@ -23,7 +23,7 @@
 
 ## 技术栈一览
 
-Astro 5（静态优先）· TypeScript · Tailwind CSS v4 · markdown-it + KaTeX（构建期公式渲染）· Supabase（Postgres + 自动 REST API + Auth）· Cloudflare Pages 部署
+Astro 5（静态优先）· TypeScript · Tailwind CSS v4 · markdown-it + KaTeX（构建期公式渲染）· Supabase（Postgres + 自动 REST API + Auth）· Cloudflare Workers 部署
 
 ## 快速开始（项目搭建后有效）
 
