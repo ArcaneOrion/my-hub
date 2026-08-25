@@ -72,6 +72,15 @@
         Postgres: posts / entries / profile 表
 ```
 
+**写路径（仅本地，详见 §7）**：
+
+```
+本地浏览器 ──> http://127.0.0.1:4322 (admin/server.mjs, 仅回环地址)
+                    │ service_role key 直连（只存本地 .env）
+                    ▼
+        xxxx.supabase.co (PostgREST REST API) —— 绕过 RLS，读改全表
+```
+
 ---
 
 ## 3. 数据模型（v1）
@@ -125,7 +134,7 @@ create table profile (
 
 **DDL 演进**：`supabase/schema.sql` 始终保持全量最新结构；增量变更另存 `supabase/migration-NNN-*.sql`（例：`migration-002-section.sql` 为 entries 增加 section 分栏），在 Supabase Studio SQL Editor 中执行。种子数据改 `scripts/seed-data.mjs` 后运行 `node scripts/gen-sql.mjs` 重新生成 `supabase/seed.sql`（幂等 upsert）。
 
-**读取规则**：前端任何查询必须带 `visible = true` / `visibility = 'public'` 过滤（unlisted/members 由未来私域会话处理）。
+**读取规则**：前端任何查询必须带 `visible = true` / `visibility = 'public'` 过滤（unlisted/members 由未来私域会话处理）。**写入规则**：写操作只经本地管理端（`npm run admin`，service_role 直连，见 §7），生产前端与 anon key 均无写权限。
 
 ## 4. API 契约（contract-first）
 
@@ -150,6 +159,11 @@ my-hub/
 │   ├── gen-sql.mjs             # seed-data.mjs → supabase/seed.sql
 │   ├── og.mjs                  # public/og.svg → og-image.png 分享图
 │   └── content/*.md            # 旧博客文章源（frontmatter + Markdown）
+├── admin/                     # 本地管理端（独立于生产构建，npm run admin）
+│   ├── server.mjs             # 本地读写 server（service_role 直连 + Markdown 预览渲染）
+│   ├── index.html             # 管理 UI
+│   ├── app.js                 # schema 驱动的 CRUD + 实时预览前端逻辑
+│   └── style.css              # 沿用站点设计令牌
 ├── docs/                       # 本文档目录
 └── src/
     ├── styles/tokens.css       # 设计令牌：颜色/字号/间距/圆角/阴影/动效时长（唯一定义处）
@@ -250,9 +264,15 @@ tokens.css 定义浅色（暖白）与深色（暖黑）两套变量：深色挂
 
 ## 7. 内容管理（后台）
 
-- **v1 后台 = Supabase Studio**（supabase.com 登录后的表格编辑器）：写文章、标 featured、调入口排序都在这里，零开发
-- 写作流：Studio 里编辑 `posts.content_md`（Markdown）→ 触发 CF Pages 重新部署（v1 手动点 Deploy Hook，远期做自动 webhook）
-- **站内 admin 页是远期项**，等真实使用痛点出现再做（登录用 Supabase Auth）
+- **本地管理端（站主 2026-08 要求）**：`npm run admin` 起一个仅监听 127.0.0.1 的可视化后台（`admin/` 目录），支持文章 / 入口卡 / 身份块的增删改查，用 Supabase service_role key 直连写入
+  - 密钥：`SUPABASE_SERVICE_ROLE_KEY`（项目根 `.env`，已 gitignore，绝不进 git / 生产）
+  - 启动：`npm run admin` → 浏览器开 http://127.0.0.1:4322
+  - 边界：独立于 Astro 构建，不进入生产产物；只绑回环地址，不对外暴露
+  - 覆盖全部现有字段（含 tagline/accent/size_hint/status 等），不新增列
+  - 实时预览：编辑表单旁并排渲染卡片 / 文章 / 身份块的实际效果；文章正文复用生产站同一套 markdown-it + KaTeX（`admin/server.mjs` 内 `/api/preview`），公式与线上一致
+- **Supabase Studio 仍是兜底**：写 SQL、跑 migration、直改表格，与本地管理端并存
+- **上线流**：本地管理端（或 Studio）改数据 → 触发 CF Pages Deploy Hook（或任意 git push）→ 构建时重新拉取 Supabase → 约 1 分钟生效。本地 `npm run dev` 是运行时拉取，改完立即可见
+- **站内登录版 admin 仍是远期项**：本地管理端已覆盖 v1 可视化需求；等真实多设备 / 多人协作痛点出现，再做 Supabase Auth 登录版
 
 ## 8. 部署（CF Pages）
 

@@ -32,6 +32,7 @@ npm install
 npm run dev        # 本地开发
 npm run build      # 构建静态站
 npm run preview    # 预览构建产物
+npm run admin      # 本地管理端（可视化编辑文章/入口卡/身份块，带实时预览，仅本地）
 ```
 
 环境变量 `.env`：
@@ -50,7 +51,7 @@ PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...   # 公开密钥，可进前端
 | M2 | Supabase 接入：建表 + 导入旧文与 entries/profile；lib/api 切真数据（mock 保留作离线回退）| ✅ |
 | M3 | 部署 + RSS / sitemap / og-image 分发三件套 | ✅ |
 | M4 | 动效打磨、响应式、私域占位入口（⚿） | 🔶 进行中（⚿ 占位与响应式基础已上线；余动效打磨收尾） |
-| 远期 | 站内 admin 页、评论、新入口（lab 等） | ⬜ |
+| 远期 | 评论、新入口（lab 等）、站内登录版 admin | ⬜（本地管理端 `npm run admin` 已实现） |
 
 ## 设计基调（一句话版）
 
