@@ -56,7 +56,7 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
     <!-- 作品 -->
     <section class="mt-14">
       <SectionHeader title="作品" />
-      <div class="grid auto-rows-[minmax(150px,auto)] grid-flow-dense grid-cols-2 gap-4 md:grid-cols-4">
+      <div class="grid auto-rows-[160px] grid-flow-dense grid-cols-2 gap-4 md:grid-cols-4">
         {works.map((entry, i) => (
           <div
             class:list={[
@@ -75,7 +75,7 @@ const services = entries.filter((e) => sectionOf(e) === 'services');
     {services.length > 0 && (
       <section class="mt-14">
         <SectionHeader title="服务" />
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid auto-rows-[160px] gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((entry, i) => (
             <EntryCard entry={{ ...entry, size_hint: 'md' }} index={i + 2} />
           ))}

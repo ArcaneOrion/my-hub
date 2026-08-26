@@ -22,7 +22,7 @@
 ```
 /                     首页 = 导航枢纽
 │                      ├ 身份块（我是谁 / 在做什么 / 座右铭）
-│                      ├ 入口卡片区（Bento 不等宽网格，数据驱动）
+│                      ├ 入口卡片区（Bento 格子画布网格：行高 160px 固定，sm/md 各占 1 格、lg 占 2×2，内容自适应填满格子，数据驱动）
 │                      └ 精选文章区（手动标记 featured 的 3~4 篇）
 ├── /posts            博客列表全貌（标签筛选、倒序）
 │    └── /posts/[slug] 文章详情（Markdown + KaTeX 数学公式）
@@ -96,7 +96,7 @@ create table entries (
   tagline     text,                      -- 一句话介绍
   icon        text,                      -- 图标标识符，占位
   accent      text,                      -- 卡片点缀色，可为空
-  size_hint   text default 'md',         -- bento 尺寸建议: sm|md|lg
+  size_hint   text default 'md',         -- 格子跨度档位（格子画布制）: sm|md 均占 1 格（视觉相同），lg=2×2 大卡；卡片内边距/行高与档位无关（统一 p-6、行高 160px，内容 clamp 适配格子）
   sort        int  not null default 100,
   visible     bool not null default true,
   section     text not null default 'works',   -- 首页分栏 blog|works|services（migration-002 引入）
@@ -269,7 +269,8 @@ tokens.css 定义浅色（暖白）与深色（暖黑）两套变量：深色挂
   - 启动：`npm run admin` → 浏览器开 http://127.0.0.1:4322
   - 边界：独立于 Astro 构建，不进入生产产物；只绑回环地址，不对外暴露
   - 覆盖全部现有字段（含 tagline/accent/size_hint/status 等），不新增列
-  - 实时预览：编辑表单旁并排渲染卡片 / 文章 / 身份块的实际效果；文章正文复用生产站同一套 markdown-it + KaTeX（`admin/server.mjs` 内 `/api/preview`），公式与线上一致
+  - 实时预览（三视图）：编辑表单旁并排渲染；文章预览含生产站同构的文章头（meta 行 / H1 / 摘要）；入口卡可切「首页网格实况」（全量卡按真实 bento 网格渲染、当前卡高亮，blog 横幅 / works 4列 dense / services 网格三种形态）与「详情落地页」（按 /s/[id] 同构渲染，含状态徽章与外链按钮双态）；iframe 增量更新只换 body，保滚动位置不闪烁；正文复用生产站同一套 markdown-it + KaTeX（`admin/server.mjs` 内 `/api/preview`），公式与线上一致
+  - 服务端兑底：NOT NULL 字段（sort/size_hint/visible/section 等）空值自动填默认值（防显式 NULL 绕过 DB default 触发 23502）；唯一键冲突（23505）转中文提示
 - **Supabase Studio 仍是兜底**：写 SQL、跑 migration、直改表格，与本地管理端并存
 - **上线流**：本地管理端（或 Studio）改数据 → 触发重建（推空 commit / Deployments 页 Retry / Deploy Hook）→ 构建时重新拉取 Supabase → 约 1 分钟生效。本地 `npm run dev` 是运行时拉取，改完立即可见
 - **站内登录版 admin 仍是远期项**：本地管理端已覆盖 v1 可视化需求；等真实多设备 / 多人协作痛点出现，再做 Supabase Auth 登录版

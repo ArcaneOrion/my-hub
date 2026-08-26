@@ -83,12 +83,16 @@ const TABLES = {
     fields: ['id', 'kind', 'title', 'tagline', 'icon', 'accent', 'size_hint', 'sort', 'visible', 'section', 'landing_description_md', 'status', 'external_url'],
     nullable: ['tagline', 'icon', 'accent', 'landing_description_md', 'status', 'external_url'],
     required: ['id', 'kind', 'title'],
+    // NOT NULL 且有默认值的列。SQL 里显式 INSERT NULL 会绕过 DB default 直接报
+    // 23502（not-null violation），所以这些字段收到空值时在应用层填默认值。
+    defaults: { size_hint: 'md', sort: 100, visible: true, section: 'works' },
     key: 'id',
   },
   posts: {
     fields: ['slug', 'title', 'summary', 'content_md', 'tags', 'featured', 'visibility', 'published_at'],
     nullable: [],
     required: ['slug', 'title', 'summary', 'content_md', 'published_at'],
+    defaults: { tags: [], featured: false, visibility: 'public' },
     key: 'slug',
   },
   profile: {
@@ -129,6 +133,16 @@ const clean = (row, nullable) => {
 
 const missingRequired = (body, spec) => spec.required.filter((k) => body[k] === undefined || body[k] === null || body[k] === '');
 
+/** NOT NULL 列兑底：insert 时缺失/空值一律填默认值；update 仅当字段出现在 payload
+ *  且值为空时才兑底（保持 partial update 语义，不重置未提交的字段）。 */
+const fillDefaults = (row, defaults, fillMissing) => {
+  for (const [k, v] of Object.entries(defaults)) {
+    const empty = row[k] === null || row[k] === undefined || row[k] === '';
+    if (empty && (fillMissing || k in row)) row[k] = v;
+  }
+  return row;
+};
+
 // ── 资源处理 ────────────────────────────────────────────────
 async function handleEntries(req, res, key, body) {
   const spec = TABLES.entries;
@@ -142,13 +156,15 @@ async function handleEntries(req, res, key, body) {
     case 'POST': {
       const miss = missingRequired(body, spec);
       if (miss.length) return send(res, 400, { error: `缺少必填字段：${miss.join(', ')}` });
-      const { data, error } = await table.insert(clean(pick(body, spec.fields), spec.nullable)).select().single();
+      const row = fillDefaults(clean(pick(body, spec.fields), spec.nullable), spec.defaults, true);
+      const { data, error } = await table.insert(row).select().single();
       if (error) throw error;
       return send(res, 201, data);
     }
     case 'PUT': {
       if (!key) return send(res, 400, { error: '缺少 id' });
-      const { data, error } = await table.update(clean(pick(body, spec.fields), spec.nullable)).eq('id', key).select().single();
+      const row = fillDefaults(clean(pick(body, spec.fields), spec.nullable), spec.defaults, false);
+      const { data, error } = await table.update(row).eq('id', key).select().single();
       if (error) throw error;
       return send(res, 200, data);
     }
@@ -175,13 +191,15 @@ async function handlePosts(req, res, key, body) {
     case 'POST': {
       const miss = missingRequired(body, spec);
       if (miss.length) return send(res, 400, { error: `缺少必填字段：${miss.join(', ')}` });
-      const { data, error } = await table.insert(clean(pick(body, spec.fields), spec.nullable)).select().single();
+      const row = fillDefaults(clean(pick(body, spec.fields), spec.nullable), spec.defaults, true);
+      const { data, error } = await table.insert(row).select().single();
       if (error) throw error;
       return send(res, 201, data);
     }
     case 'PUT': {
       if (!key) return send(res, 400, { error: '缺少 slug' });
-      const { data, error } = await table.update(clean(pick(body, spec.fields), spec.nullable)).eq('slug', key).select().single();
+      const row = fillDefaults(clean(pick(body, spec.fields), spec.nullable), spec.defaults, false);
+      const { data, error } = await table.update(row).eq('slug', key).select().single();
       if (error) throw error;
       return send(res, 200, data);
     }
@@ -231,6 +249,10 @@ async function api(req, res, url) {
     return send(res, 404, { error: `未知资源 /api/${resource}` });
   } catch (err) {
     console.error('[admin] API error:', err);
+    // 唯一键冲突（重复 id/slug）：转友好提示，不透出 Postgres 原文
+    if (err?.code === '23505') {
+      return send(res, 409, { error: `保存失败：${err.details ?? '已存在相同的 id/slug'}，请更换后重试` });
+    }
     return send(res, 500, { error: err?.message ?? String(err) });
   }
 }

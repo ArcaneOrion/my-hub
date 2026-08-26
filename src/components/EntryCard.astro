@@ -12,13 +12,14 @@ const href =
       ? `/s/${entry.id}`
       : `/${entry.id}`;
 
-const pad = entry.size_hint === 'lg' ? 'md:p-8 p-5' : entry.size_hint === 'sm' ? 'p-5' : 'p-6';
+/* 格子画布制：卡片大小只由网格跨度决定（lg 跨两行），padding 统一，内容自适应填满格子 */
+const pad = 'p-6';
 /* 仅真正直接外链的卡（kind=external）用 ↗；service 卡去的是站内落地页，仍用 → */
 const glyph = entry.kind === 'external' ? '↗' : '→';
 ---
 <a
   href={href}
-  class={`card rise group flex flex-col justify-between gap-6 ${pad} ${entry.size_hint === 'lg' ? 'md:row-span-2' : ''}`}
+  class={`card rise group flex h-full flex-col justify-between ${pad}`}
   style={`--i:${index}`}
   {...(entry.kind === 'external' ? { target: '_blank', rel: 'noopener' } : {})}
 >
@@ -31,6 +32,7 @@ const glyph = entry.kind === 'external' ? '↗' : '→';
       {entry.title}
       <span class="inline-block transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--accent)]">{glyph}</span>
     </h2>
-    {entry.tagline && <p class="mt-1.5 text-[13.5px] leading-relaxed" style="color: var(--ink-muted);">{entry.tagline}</p>}
+    {/* tagline 区固定两行高占位：无内容也保留，保证同行卡片标题基线对齐 */}
+    <p class="mt-1.5 min-h-[44px] text-[13.5px] leading-relaxed line-clamp-2" style="color: var(--ink-muted);">{entry.tagline}</p>
   </div>
 </a>
