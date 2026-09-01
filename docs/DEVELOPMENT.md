@@ -292,6 +292,16 @@ tokens.css 定义浅色（暖白）与深色（暖黑）两套变量：深色挂
 
 **上线后必验**：刷新页面确认内容已更新。若内容仍是旧版（如英文标题 / 旧简介），优先怀疑构建变量缺失导致回退 mock——本地 `npm run build`（有 `.env`）产物应含真实数据，对比线上 HTML 是否与 mock 一致即可定位。
 
+### 8.1 Supabase 免费层保活（supabase-keepalive Worker）
+
+Supabase 免费项目 **7 天无 API 活动会被自动暂停**（2026-09-01 收过预告邮件）。暂停后果：站点静态页面照常显示（SSG 构建期拉数据），但**重新构建、本地管理端会断**；90 天内 dashboard 可一键恢复，超期只能导出。
+
+保活方案：CF Worker `supabase-keepalive`（源码 `~/AI/Agent-workerspace/cf-worker/supabase-keepalive/`），cron 每天 UTC 16:00（北京 0 点）向 REST 端点发一次轻量 SELECT（`posts?select=id&limit=1`，anon key 只读）。手动触发/验证端点：`https://keepalive.alice001.top`。日志在 CF Dashboard → Workers → supabase-keepalive → Logs。
+
+**CF cron 名额背景**：免费账户限 5 个 cron trigger，当前 5/5（languages-en 1 + price-watch 2 + rss-digest 1 + keepalive 1）。keepalive 的名额来自 cloud-mail（2026-09-01 站主确认只删其 cron、保留服务本体）；cloud-mail 是占最后一个名额的Worker，删它前需先想清楚。
+
+**暂停了怎么办**：Dashboard → 项目 → Restore，90 天内有效；站点静态层不中断，恢复后重建/管理端即恢复。
+
 ## 9. 里程碑与验收
 
 见 README.md 路线图表。每个里程碑完成时**必须同步更新本文档与 README**（见 AGENTS.md 硬规则）。
